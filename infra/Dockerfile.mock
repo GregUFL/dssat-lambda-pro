@@ -1,0 +1,32 @@
+# ---------- Runtime: AWS Lambda Python 3.11 ----------
+FROM public.ecr.aws/lambda/python:3.11
+
+# Minimal runtime tree
+WORKDIR /var/task
+RUN mkdir -p /var/task/bin /var/task/Data
+
+# For now, create a mock binary for testing the infrastructure
+# Replace this with actual DSSAT compilation once CMake issues are resolved
+RUN echo '#!/bin/bash' > /var/task/bin/dscsm048 && \
+    echo 'echo "Mock DSSAT binary - would run real simulation here"' >> /var/task/bin/dscsm048 && \
+    echo 'echo "Creating mock Summary.OUT file"' >> /var/task/bin/dscsm048 && \
+    echo 'echo "This is a mock Summary.OUT file" > Summary.OUT' >> /var/task/bin/dscsm048 && \
+    echo 'echo "Creating mock PlantGro.OUT file"' >> /var/task/bin/dscsm048 && \
+    echo 'echo "This is a mock PlantGro.OUT file" > PlantGro.OUT' >> /var/task/bin/dscsm048 && \
+    chmod +x /var/task/bin/dscsm048
+
+# Create mock core data files
+RUN mkdir -p /var/task/Data/StandardData /var/task/Data/Genotype && \
+    echo "Mock DSSATPRO.v48" > /var/task/Data/DSSATPRO.v48 && \
+    echo "Mock Data.CDE" > /var/task/Data/Data.CDE && \
+    echo "Mock Detail.CDE" > /var/task/Data/Detail.CDE
+
+# App source
+COPY src/ /var/task/src/
+
+ENV PATH="/var/task/bin:${PATH}"
+# Faster cold start: pre-create work dirs
+RUN mkdir -p /tmp/work /tmp/in /tmp/out
+
+# Lambda entrypoint
+CMD ["src.handler.lambda_handler"]

@@ -1,0 +1,58 @@
+# DSSAT Lambda Pro - Ignore File
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Docker
+.dockerignore
+
+# AWS
+.aws/
+*.pem
+
+# Local test files
+/tmp/
+*.zip
+test_output/
+
+# Large data files (keep small test files)
+tests/inputs/large_datasets/
+
+# Secrets
+.env
+secrets.json
