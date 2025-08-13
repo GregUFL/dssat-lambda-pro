@@ -1,0 +1,59 @@
+# ---------- Builder: compile dscsm048 on Amazon Linux 2023 ----------
+FROM amazonlinux:2023 AS builder
+RUN dnf -y install gcc gcc-gfortran cmake make git tar gzip which && dnf clean all
+
+WORKDIR /build
+
+# Try with a more recent version that might have better CMake support
+RUN git clone --branch main --depth 1 https://github.com/DSSAT/dssat-csm-os.git || \
+    git clone --branch v4.8.2.0 --depth 1 https://github.com/DSSAT/dssat-csm-os.git || \
+    git clone --branch v4.8.5.0 --depth 1 https://github.com/DSSAT/dssat-csm-os.git
+
+# Data repo provides the canonical structure
+RUN git clone --branch main --depth 1 https://github.com/DSSAT/dssat-csm-data.git || \
+    git clone --branch v4.8.5.0 --depth 1 https://github.com/DSSAT/dssat-csm-data.git
+
+WORKDIR /build/dssat-csm-os
+
+# Try different CMake configuration approaches
+RUN mkdir -p build && cd build && \
+    ( \
+      # Try 1: Standard build without problematic flags
+      FC=gfortran cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_Fortran_COMPILER=gfortran .. && \
+      cmake --build . -- -j"$(nproc)" \
+    ) || ( \
+      # Try 2: With minimal flags
+      rm -rf * && \
+      FC=gfortran cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_Fortran_FLAGS="-std=legacy" .. && \
+      cmake --build . -- -j"$(nproc)" \
+    ) || ( \
+      # Try 3: Direct make if CMake fails
+      cd .. && \
+      make -f Makefile.unix FC=gfortran FFLAGS="-O2 -std=legacy" \
+    )
+
+# ---------- Runtime: AWS Lambda Python 3.11 ----------
+FROM public.ecr.aws/lambda/python:3.11
+
+# Minimal runtime tree
+WORKDIR /var/task
+RUN mkdir -p /var/task/bin /var/task/Data
+
+# Copy model binary and essential Data
+COPY --from=builder /build/dssat-csm-os/build/bin/dscsm048 /var/task/bin/dscsm048
+
+COPY --from=builder /build/dssat-csm-os/Data/DSSATPRO.v48 /var/task/Data/DSSATPRO.v48
+COPY --from=builder /build/dssat-csm-os/Data/Data.CDE       /var/task/Data/Data.CDE
+COPY --from=builder /build/dssat-csm-os/Data/Detail.CDE     /var/task/Data/Detail.CDE
+COPY --from=builder /build/dssat-csm-os/Data/StandardData   /var/task/Data/StandardData
+COPY --from=builder /build/dssat-csm-os/Data/Genotype       /var/task/Data/Genotype
+
+# App source
+COPY src/ /var/task/src/
+
+ENV PATH="/var/task/bin:${PATH}"
+# Faster cold start: pre-create work dirs
+RUN mkdir -p /tmp/work /tmp/in /tmp/out && chmod +x /var/task/bin/dscsm048
+
+# Lambda entrypoint
+CMD ["src.handler.lambda_handler"]

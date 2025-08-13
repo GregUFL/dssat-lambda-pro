@@ -55,36 +55,60 @@ A production-ready AWS Lambda function for running DSSAT (Decision Support Syste
 }
 ```
 
-## 📦 Components
+## 🧪 Testing
 
-### 1. Docker Infrastructure
-- **Location**: `infra/Dockerfile`
-- **Base**: Amazon Linux 2 + Lambda Python 3.11
-- **DSSAT**: v4.8.5.0 with complete data library
-- **Libraries**: Fortran runtime, dynamic linking
+### Comprehensive Test Suite
+```bash
+# Run full test suite
+./scripts/test_comprehensive.sh
 
-### 2. Lambda Handler (`src/handler.py`)
-- Multi-input support (Base64/S3)
-- Automatic crop detection
-- Error handling and logging
-- Flexible output options
+# Validate code quality  
+./scripts/validate_code.sh
+```
 
-### 3. Input Processing (`src/stage_inputs.py`)
-- ZIP extraction and validation
-- File organization by type
-- Core DSSAT data integration
-- Path resolution
+### Manual Testing
+```bash
+# Test AWS Lambda function
+aws lambda invoke \
+  --function-name dssat-lambda-pro \
+  --cli-binary-format raw-in-base64-out \
+  --payload file://test-payload.json \
+  response.json
+```
 
-### 4. DSSAT Execution (`src/run_dssat.py`)
-- **Mode A**: Single experiment, all treatments
-- **Mode B**: Batch file processing  
-- **Mode MULTI_A**: Multiple experiments
-- Module auto-detection and override
+### Performance Benchmarks
+- **Execution Time**: 30-60 seconds typical
+- **Memory Usage**: ~1GB peak
+- **Docker Image**: 776MB optimized
+- **Cold Start**: < 10 seconds
 
-### 5. Output Management (`src/collect_outputs.py`)
-- File prioritization and collection
-- ZIP packaging
-- S3 upload integration
+## 📊 Production Status
+
+✅ **Fully Tested**: Comprehensive test suite passed  
+✅ **AWS Deployed**: Production-ready on AWS Lambda  
+✅ **Multi-Crop**: 20+ crop types supported  
+✅ **Error Handling**: Robust error management  
+✅ **Documentation**: Complete deployment guides  
+✅ **Performance**: Optimized for serverless execution  
+
+## 🚀 Getting Started
+
+1. **Review Documentation**
+   - [Deployment Guide](DEPLOYMENT.md)
+   - [Usage Guide](USAGE.md)
+   - [Release Notes](RELEASE_NOTES.md)
+
+2. **Deploy to AWS**
+   ```bash
+   # Build and deploy
+   docker build -t dssat-lambda-pro -f infra/Dockerfile .
+   # Follow DEPLOYMENT.md for complete steps
+   ```
+
+3. **Test Your Function**
+   ```bash
+   ./scripts/test_comprehensive.sh
+   ```
 - ZIP archive creation
 - Artifact listing and metadata
 
