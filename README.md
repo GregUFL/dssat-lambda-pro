@@ -166,3 +166,47 @@ For production deployment:
 **Status**: ✅ **IMPLEMENTATION COMPLETE**  
 **Demo**: ✅ **FULLY FUNCTIONAL**  
 **Production Ready**: 🔧 **Pending DSSAT compilation fix**
+
+## Power-User DSSAT Invocation (Real Binary Integration)
+
+The runtime now supports executing the real DSSAT executable in a Windows-style manner. The wrapper exposes `DSCSM048.EXE` in the working directory and arguments are passed directly.
+
+Command pattern (inside container work dir):
+
+```
+DSCSM048.EXE <MODULE_CODE> <MODE_FLAG> <FILE>
+```
+
+Examples:
+```
+DSCSM048.EXE MZCER048 A TEST01.MZX
+DSCSM048.EXE MZCER048 B DSSBatch.v48
+```
+
+Where:
+- MODULE_CODE: module executable identifier (e.g., MZCER048, WHCER048, CSCER048)
+- MODE_FLAG: A (single FileX), B (batch), N (seasonal), Q (sequence), S (spatial)
+- FILE: FileX (.MZX) or batch/control file (.v48)
+
+### Lambda Event Additions
+Field `module_code` lets you explicitly choose the module. If omitted, auto-detection attempts:
+1. Infer crop from FileX extension (.MZX -> MZ -> MZCER048)
+2. Parse *CULTIVARS section
+Fallback: `CSCER048`.
+
+Returned JSON now includes `module` plus last stdout/stderr for diagnosis. Set environment `DSSAT_DEBUG=1` to generate `DIAG.TXT` with a directory listing and invocation parameters.
+
+Environment variables exported for DSSAT compatibility: `DSSATDIR=/DSSAT48`, `DSSATPATH=/DSSAT48`.
+
+### Troubleshooting STOP 99
+1. Inspect `MODEL.ERR` (returned by default) for parsing/location issues.
+2. Ensure Weather (*.WTH) filenames match WSTA codes inside the FileX (first 5 chars typically).
+3. Confirm UNIX line endings (LF) in inputs; convert if CRLF present.
+4. Provide a correctly column-aligned batch file (`DSSBatch.v48`) for B mode.
+5. Override module via `module_code` if auto-detection chooses the wrong one.
+6. Enable debug to capture `DIAG.TXT`.
+
+### Planned Enhancements
+- Additional module mappings once full DSSATPRO.v48 profile inspected
+- Validation step to pre-check required Weather/Soil references before run
+- Optional strace layer for deep I/O debugging (local only)
