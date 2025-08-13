@@ -1,53 +1,90 @@
-# DSSAT Lambda Pro - Implementation Complete ✅
+# DSSAT Lambda Pro - AWS Serverless Crop Simulation Platform ✅
 
-## Overview
-Successfully implemented a complete AWS Lambda function for running DSSAT crop simulation models in a serverless environment.
+A production-ready AWS Lambda function for running DSSAT (Decision Support System for Agrotechnology Transfer) crop simulation models in a serverless environment. Successfully tested and deployed with full multi-crop support.
 
-## Architecture
+## 🎯 Features
+
+- **Multi-Crop Support**: 20+ crops including Maize, Wheat, Rice, Soybean, Cotton, etc.
+- **Flexible Input**: Base64 ZIP upload or S3 integration
+- **Auto-Detection**: Automatically detects crop type from input files
+- **Scalable**: Serverless architecture with AWS Lambda
+- **Complete Output**: All DSSAT output files (Summary, PlantGro, Evaluate, etc.)
+- **Production Ready**: Error handling, logging, and monitoring
+
+## 🏗️ Architecture
+
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│  Input ZIP      │───▶│  Lambda Handler  │───▶│  Output ZIP     │
-│  (Base64)       │    │                  │    │  (Base64)       │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+│  Input Sources  │───▶│  Lambda Handler  │───▶│  Output Options │
+│  • Base64 ZIP   │    │  • Auto-detect   │    │  • Base64 ZIP   │
+│  • S3 Upload    │    │  • Multi-mode    │    │  • S3 Storage   │
+└─────────────────┘    │  • Error Handle  │    └─────────────────┘
+                       └──────────────────┘
                               │
                               ▼
                     ┌──────────────────┐
                     │  DSSAT Execution │
-                    │  (dscsm048)      │
+                    │  20+ Crop Models │
+                    │  Complete Data   │
                     └──────────────────┘
 ```
 
-## Components Implemented ✅
+## 🚀 Quick Start
 
-### 1. Multi-Stage Dockerfile
-- **Location**: `infra/Dockerfile` (full DSSAT), `infra/Dockerfile.mock` (working demo)
-- **Features**: 
-  - Amazon Linux 2023 build environment
-  - Fortran/GCC compilation toolchain
-  - Lambda Python 3.11 runtime
-  - Pre-built DSSAT data structure
+### AWS Console Test
+```json
+{
+  "s3_input_bucket": "your-input-bucket",
+  "s3_input_key": "experiments/your-experiment.zip",
+  "s3_output_bucket": "your-output-bucket", 
+  "s3_output_prefix": "results/test-001",
+  "unzip_outputs": true
+}
+```
+
+### Expected Response
+```json
+{
+  "status": "OK",
+  "exit_code": 0,
+  "mode": "A",
+  "runs": 1,
+  "module": "MZCER048",
+  "s3_results_zip": "s3://bucket/results/test-001/results.zip",
+  "artifacts": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"]
+}
+```
+
+## 📦 Components
+
+### 1. Docker Infrastructure
+- **Location**: `infra/Dockerfile`
+- **Base**: Amazon Linux 2 + Lambda Python 3.11
+- **DSSAT**: v4.8.5.0 with complete data library
+- **Libraries**: Fortran runtime, dynamic linking
 
 ### 2. Lambda Handler (`src/handler.py`)
-- Input validation and ZIP processing
-- S3 integration (optional)
-- Error handling and response formatting
-- Base64 encoding/decoding
+- Multi-input support (Base64/S3)
+- Automatic crop detection
+- Error handling and logging
+- Flexible output options
 
-### 3. Input Staging (`src/stage_inputs.py`)
-- ZIP extraction and file organization
-- Directory structure creation (Weather/, Soil/, Genotype/)
-- Core DSSAT data copying
-- File type-based placement logic
+### 3. Input Processing (`src/stage_inputs.py`)
+- ZIP extraction and validation
+- File organization by type
+- Core DSSAT data integration
+- Path resolution
 
 ### 4. DSSAT Execution (`src/run_dssat.py`)
-- Multiple execution modes:
-  - **Mode A**: Single FileX, all treatments
-  - **Mode B**: Batch file processing  
-  - **Mode MULTI_A**: Multiple FileX files
-- Process management and error capture
+- **Mode A**: Single experiment, all treatments
+- **Mode B**: Batch file processing  
+- **Mode MULTI_A**: Multiple experiments
+- Module auto-detection and override
 
-### 5. Output Collection (`src/collect_outputs.py`)
-- File prioritization (Summary.OUT, PlantGro.OUT, etc.)
+### 5. Output Management (`src/collect_outputs.py`)
+- File prioritization and collection
+- ZIP packaging
+- S3 upload integration
 - ZIP archive creation
 - Artifact listing and metadata
 

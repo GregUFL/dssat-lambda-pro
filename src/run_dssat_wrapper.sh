@@ -31,6 +31,11 @@ if [ ! -e /usr/local/StandardData ]; then
   fi
 fi
 
+# AWS Lambda fallback: if symlink failed, copy all StandardData files to working directory
+if [ ! -e /usr/local/StandardData ] && [ -d /var/task/Data/StandardData ]; then
+  cp /var/task/Data/StandardData/* "$WORKDIR/" 2>/dev/null || true
+fi
+
 # Export environment variables some tooling expects
 export DSSATDIR=/DSSAT48
 export DSSATPATH=/DSSAT48

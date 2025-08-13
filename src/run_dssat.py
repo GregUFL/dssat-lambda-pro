@@ -7,11 +7,44 @@ def _run(cmd, cwd: Path):
 
 MODULE_MAP = {
     # DSSAT crop codes -> module executable code
-    # These codes should correspond to entries in DSSATPRO.v48 (column formatted)
-    "MZ": "MZCER048",   # Maize CERES
-    "WH": "WHCER048",   # Wheat CERES
-    "RI": "RICER048",   # Rice CERES (adjust if different in DSSATPRO)
-    "CS": "CSCER048",   # Cropping system / generic CERES driver (often used in docs)
+    # From DSSATPRO.v48
+    "AL": "PRFRM048",   # Alfalfa
+    "BA": "CSCER048",   # Barley
+    "BG": "CRGRO048",   # Bambara Groundnut
+    "BH": "PRFRM048",   # Bahia Grass
+    "BM": "PRFRM048",   # Bermuda Grass
+    "BN": "CRGRO048",   # Dry Bean
+    "BR": "PRFRM048",   # Brachiaria
+    "BS": "BSCER048",   # Sugar Beet
+    "CB": "CRGRO048",   # Cabbage
+    "CH": "CRGRO048",   # Chickpea
+    "CI": "CRGRO048",   # Chia
+    "CN": "CRGRO048",   # Canola
+    "CO": "CRGRO048",   # Cotton
+    "CP": "CRGRO048",   # Cowpea
+    "CS": "CSYCA048",   # Cassava
+    "FB": "CRGRO048",   # Faba Bean
+    "GB": "CRGRO048",   # Green Bean
+    "GG": "PRFRM048",   # Guinea Grass
+    "ML": "MLCER048",   # Millet
+    "MZ": "MZCER048",   # Maize
+    "PE": "CRGRO048",   # Pea
+    "PI": "PIALO048",   # Pineapple
+    "PN": "CRGRO048",   # Peanut
+    "PO": "PRFRM048",   # Perennial Peanut
+    "PP": "CRGRO048",   # Pigeon Pea
+    "PT": "PTSUB048",   # Potato
+    "QU": "CRGRO048",   # Quinoa
+    "RI": "RICER048",   # Rice
+    "SB": "CRGRO048",   # Soybean
+    "SC": "SCCAN048",   # Sugarcane
+    "SG": "SGCER048",   # Sorghum
+    "SR": "CRGRO048",   # Strawberry
+    "SU": "CRGRO048",   # Sunflower
+    "SW": "SWCER048",   # Sweet Corn
+    "TM": "CRGRO048",   # Tomato
+    "TR": "TRARO048",   # Taro
+    "WH": "CSCER048",   # Wheat (uses generic CERES)
 }
 GENERIC_MODULE = "CSCER048"
 
