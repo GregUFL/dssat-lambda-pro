@@ -1,32 +1,52 @@
 # DSSAT Lambda Pro - AWS Serverless Crop Simulation Platform ✅
 
-A production-ready AWS Lambda function for running DSSAT (Decision Support System for Agrotechnology Transfer) crop simulation models in a serverless environment. Successfully tested and deployed with full multi-crop support.
+A production-ready AWS Lambda function for running DSSAT (Decision Support System for Agrotechnology Transfer) crop simulation models in a serverless environment. Enterprise-grade agricultural simulation platform with multiple input methods and comprehensive crop support.
+
+## 🚀 Latest Enhancements (v5.0)
+
+### ✨ New Features
+- **Individual File Processing**: Process single files directly without ZIP archives
+- **Enhanced S3 Integration**: Direct S3 object processing with flexible input methods
+- **Multiple Input Formats**: ZIP files, individual files, or direct content uploads
+- **Backward Compatibility**: All existing functionality preserved
+
+### 🔧 Critical Fixes
+- **Universal Crop Support**: Fixed file extension handling for all crop types (.WHX, .RIX, .SBX, .COX)
+- **Deployment Reliability**: Resolved import issues and enhanced cross-platform compatibility
+- **Error Handling**: Improved validation and user feedback
 
 ## 🎯 Features
 
 - **Multi-Crop Support**: 20+ crops including Maize, Wheat, Rice, Soybean, Cotton, etc.
-- **Flexible Input**: Base64 ZIP upload or S3 integration
+- **Flexible Input Methods**: 
+  - Base64 ZIP upload
+  - Individual file uploads  
+  - Direct content submission
+  - S3 integration
 - **Auto-Detection**: Automatically detects crop type from input files
 - **Scalable**: Serverless architecture with AWS Lambda
 - **Complete Output**: All DSSAT output files (Summary, PlantGro, Evaluate, etc.)
 - **Production Ready**: Error handling, logging, and monitoring
+- **Enterprise Documentation**: Comprehensive technical and business documentation
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│  Input Sources  │───▶│  Lambda Handler  │───▶│  Output Options │
-│  • Base64 ZIP   │    │  • Auto-detect   │    │  • Base64 ZIP   │
-│  • S3 Upload    │    │  • Multi-mode    │    │  • S3 Storage   │
-└─────────────────┘    │  • Error Handle  │    └─────────────────┘
-                       └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  DSSAT Execution │
-                    │  20+ Crop Models │
-                    │  Complete Data   │
-                    └──────────────────┘
+┌─────────────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│    Input Sources        │───▶│  Lambda Handler  │───▶│  Output Options │
+│  • Base64 ZIP          │    │  • Auto-detect   │    │  • Base64 ZIP   │
+│  • Individual Files    │    │  • Multi-format  │    │  • S3 Storage   │
+│  • Direct Content      │    │  • Enhanced      │    │  • JSON Response│
+│  • S3 Objects          │    │    Error Handle  │    └─────────────────┘
+└─────────────────────────┘    └──────────────────┘
+                                      │
+                                      ▼
+                            ┌──────────────────┐
+                            │  DSSAT Execution │
+                            │  Cross-Platform  │
+                            │  20+ Crop Models │
+                            │  Complete Data   │
+                            └──────────────────┘
 ```
 
 ## 🚀 Quick Start
@@ -82,13 +102,30 @@ aws lambda invoke \
 - **Docker Image**: 776MB optimized
 - **Cold Start**: < 10 seconds
 
+## � Comprehensive Documentation
+
+### 📋 Executive & Business Documentation
+- **[Executive Summary](EXECUTIVE_SUMMARY.md)** - Project overview and business impact
+- **[Cross-Platform Technical Guide](DSSAT_CROSS_PLATFORM_ADAPTATION.md)** - Windows→Linux adaptation details
+- **[Conversational Walkthrough](CONVERSATIONAL_WALKTHROUGH.md)** - Step-by-step implementation explanation
+
+### 📈 Presentation Materials  
+- **[Slide Summary](DSSAT_SLIDE_SUMMARY.md)** - Executive presentation format
+- **[Improvements Analysis](IMPROVEMENTS_ANALYSIS.md)** - Detailed enhancement breakdown
+
+### 🔧 Technical Documentation
+- **[Deployment Guide](DEPLOYMENT.md)** - AWS deployment instructions
+- **[Usage Guide](USAGE.md)** - API usage and examples
+- **[Release Notes](RELEASE_NOTES.md)** - Version history and changes
+
 ## 📊 Production Status
 
-✅ **Fully Tested**: Comprehensive test suite passed  
+✅ **Fully Enhanced**: v5.0 major improvements complete  
 ✅ **AWS Deployed**: Production-ready on AWS Lambda  
-✅ **Multi-Crop**: 20+ crop types supported  
-✅ **Error Handling**: Robust error management  
-✅ **Documentation**: Complete deployment guides  
+✅ **Multi-Input**: ZIP, individual files, direct content  
+✅ **Multi-Crop**: 20+ crop types with universal file support  
+✅ **Error Handling**: Robust error management and validation  
+✅ **Enterprise Documentation**: Complete technical and business docs  
 ✅ **Performance**: Optimized for serverless execution  
 
 ## 🚀 Getting Started
