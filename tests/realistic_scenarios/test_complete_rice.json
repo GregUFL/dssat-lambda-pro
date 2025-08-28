@@ -1,0 +1,16 @@
+{
+  "comment": "REALISTIC TEST: Complete Rice Simulation - IRRI Philippines",
+  "description": "Real rice experiment from DSSAT database with all required files", 
+  "individual_files": {
+    "rice_experiment.RIX": "<<RICE_EXP_B64>>",
+    "weather_philippines.WTH": "<<RICE_WTH_B64>>",
+    "tropical_soil.SOL": "<<SOIL_B64>>", 
+    "rice_cultivar.CUL": "<<RICE_CUL_B64>>",
+    "rice_species.SPE": "<<RICE_SPE_B64>>"
+  },
+  "output_format": "individual_files",
+  "return_outputs": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"],
+  "debug": true,
+  "expected_crop": "rice", 
+  "expected_module": "RICER048"
+}

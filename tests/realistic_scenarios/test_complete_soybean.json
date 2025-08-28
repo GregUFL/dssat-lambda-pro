@@ -1,0 +1,17 @@
+{
+  "comment": "REALISTIC TEST: Complete Soybean Simulation - University of Florida",
+  "description": "Real soybean experiment from DSSAT database with all required files",
+  "individual_files": {
+    "soybean_experiment.SBX": "<<SOYBEAN_EXP_B64>>", 
+    "weather_florida.WTH": "<<SOYBEAN_WTH_B64>>",
+    "sandy_soil.SOL": "<<SOIL_B64>>",
+    "soybean_cultivar.CUL": "<<SOYBEAN_CUL_B64>>",
+    "soybean_ecotype.ECO": "<<SOYBEAN_ECO_B64>>",
+    "soybean_species.SPE": "<<SOYBEAN_SPE_B64>>"
+  },
+  "output_format": "individual_files", 
+  "return_outputs": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"],
+  "debug": true,
+  "expected_crop": "soybean",
+  "expected_module": "CRGRO048"
+}

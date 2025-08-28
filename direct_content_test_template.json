@@ -1,0 +1,15 @@
+{
+  "files_content": {
+    "experiment.mzx": "base64_content_here_replace_with_actual",
+    "weather.wth": "base64_content_here_replace_with_actual", 
+    "soil.sol": "base64_content_here_replace_with_actual",
+    "cultivar.cul": "base64_content_here_replace_with_actual",
+    "species.spe": "base64_content_here_replace_with_actual",
+    "ecotype.eco": "base64_content_here_replace_with_actual"
+  },
+  "s3_output_bucket": "dssatout-11414",
+  "s3_output_prefix": "direct-content-test",
+  "unzip_outputs": true,
+  "return_zip_b64": false,
+  "simulation_id": "direct-content-test-001"
+}

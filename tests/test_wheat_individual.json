@@ -1,0 +1,28 @@
+{
+  "comment": "Test wheat simulation with individual files input",
+  "individual_files": {
+    "wheat_experiment.WHX": {
+      "s3_bucket": "test-bucket", 
+      "s3_key": "experiments/wheat/KSAS8101.WHX"
+    },
+    "weather.WTH": {
+      "s3_bucket": "test-bucket",
+      "s3_key": "weather/KSAS8101.WTH" 
+    },
+    "soil.SOL": {
+      "s3_bucket": "test-bucket",
+      "s3_key": "soil/SOIL.SOL"
+    },
+    "wheat.CUL": {
+      "s3_bucket": "test-bucket", 
+      "s3_key": "genotype/wheat/WHCER048.CUL"
+    },
+    "wheat.ECO": {
+      "s3_bucket": "test-bucket",
+      "s3_key": "genotype/wheat/WHCER048.ECO"
+    }
+  },
+  "output_format": "individual_files",
+  "return_outputs": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"],
+  "debug": true
+}

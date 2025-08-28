@@ -31,7 +31,9 @@ def _copy_core_data(dst_root: Path):
 
 def _place_by_ext(f: Path, root: Path):
     ext = f.suffix.upper()
-    if ext == ".MZX":  # FileX
+    # Handle ALL crop experiment files (.??X pattern)
+    if len(ext) == 4 and ext.endswith('X'):
+        # All experiment files: .MZX, .WHX, .RIX, .SBX, .COX, etc.
         shutil.move(str(f), str(root / f.name))
     elif ext == ".WTH":
         shutil.move(str(f), str(root / "Weather" / f.name))
@@ -58,14 +60,16 @@ def stage_from_zip(zip_path, work_dir: Path):
 
     _copy_core_data(work_dir)
 
-    mzx = []
+    mzx = []  # Experiment files (all crops: .MZX, .WHX, .RIX, .SBX, etc.)
     batch_file = None
     for p in tmp_extract.rglob("*"):
         if p.is_dir():
             continue
-        if p.suffix.upper() == ".MZX":
+        ext = p.suffix.upper()
+        # Detect ALL crop experiment files (.??X pattern)
+        if len(ext) == 4 and ext.endswith('X'):
             mzx.append(p.name)
-        if p.suffix.upper() == ".V48" and p.name.upper().endswith(".V48"):
+        if ext == ".V48" and p.name.upper().endswith(".V48"):
             batch_file = p.name
         _place_by_ext(p, work_dir)
 

@@ -1,0 +1,30 @@
+{
+  "comment": "Test soybean simulation with mixed input methods",
+  "individual_files": {
+    "soybean.SBX": {
+      "base64_content": "BASE64_SOYBEAN_EXPERIMENT"
+    },
+    "weather.WTH": {
+      "s3_bucket": "weather-data",
+      "s3_key": "iowa/2023/weather.WTH"
+    },
+    "soil.SOL": {
+      "base64_content": "BASE64_SOIL_DATA"
+    },
+    "soybean.CUL": {
+      "s3_bucket": "genotype-data", 
+      "s3_key": "soybean/varieties.CUL"
+    },
+    "soybean.ECO": {
+      "s3_bucket": "genotype-data",
+      "s3_key": "soybean/ecotypes.ECO" 
+    },
+    "soybean.SPE": {
+      "s3_bucket": "genotype-data",
+      "s3_key": "soybean/species.SPE"
+    }
+  },
+  "output_format": "individual_files",
+  "return_outputs": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT", "Warning.OUT"],
+  "simulation_id": "soybean-mixed-input-test"
+}

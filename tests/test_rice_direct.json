@@ -1,0 +1,15 @@
+{
+  "comment": "Test rice simulation with direct base64 content",
+  "files_content": {
+    "rice_experiment.RIX": "BASE64_CONTENT_HERE",
+    "weather.WTH": "BASE64_WEATHER_CONTENT", 
+    "soil.SOL": "BASE64_SOIL_CONTENT",
+    "rice.CUL": "BASE64_CULTIVAR_CONTENT",
+    "rice.ECO": "BASE64_ECOTYPE_CONTENT"
+  },
+  "output_format": "s3_individual",
+  "s3_output_bucket": "results-bucket",
+  "s3_output_prefix": "rice/simulation-001",
+  "return_outputs": ["Summary.OUT", "PlantGro.OUT"],
+  "simulation_id": "rice-test-001"
+}

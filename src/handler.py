@@ -1,4 +1,5 @@
-import base64, json, os, shutil, subprocess, tempfile, zipfile, sys
+import base64, json, os, shutil, subprocess, tempfile
+import zipfile, sys
 from pathlib import Path
 
 # Optional S3 IO if user wants it
@@ -50,6 +51,121 @@ def _upload_unzipped_to_s3(bucket, prefix, work_dir: Path, artifacts):
     
     return s3_files
 
+def stage_individual_files(input_files, work_dir: Path):
+    """Stage individual files from S3 or base64 content"""
+    from .stage_inputs import _copy_core_data, _place_by_ext
+    
+    work_dir.mkdir(parents=True, exist_ok=True)
+    _copy_core_data(work_dir)
+    
+    experiment_files = []
+    batch_file = None
+    
+    for filename, source in input_files.items():
+        file_path = work_dir / "temp" / filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        if isinstance(source, dict):
+            if "s3_bucket" in source and "s3_key" in source:
+                # Download from S3
+                _download_s3(source["s3_bucket"], source["s3_key"], file_path)
+            elif "base64_content" in source:
+                # Decode base64 content
+                _b64_to_file(source["base64_content"], file_path)
+            else:
+                raise ValueError(f"Invalid source for file {filename}: {source}")
+        else:
+            # Assume it's base64 content directly
+            _b64_to_file(source, file_path)
+        
+        # Organize file by extension
+        _place_by_ext(file_path, work_dir)
+        
+        # Track experiment files by their final location
+        ext = Path(filename).suffix.upper()
+        if len(ext) == 4 and ext.endswith('X'):
+            # Experiment files go to root directory
+            experiment_files.append(work_dir / filename)
+        elif ext == ".V48":
+            # Batch files go to root directory
+            batch_file = work_dir / filename
+    
+    # Determine driver mode
+    driver = None
+    if batch_file:
+        driver = "B"
+    elif len(experiment_files) == 1:
+        driver = "A"
+    
+    staged = {
+        "mzx": experiment_files,
+        "batch_file": batch_file,
+        "driver": driver,
+        "precheck": []
+    }
+    
+    return staged
+
+def stage_direct_content(files_content, work_dir: Path):
+    """Stage files directly from base64 content in JSON"""
+    from .stage_inputs import _copy_core_data, _place_by_ext
+    
+    work_dir.mkdir(parents=True, exist_ok=True)
+    _copy_core_data(work_dir)
+    
+    experiment_files = []
+    batch_file = None
+    
+    for filename, base64_content in files_content.items():
+        file_path = work_dir / "temp" / filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Decode base64 content
+        _b64_to_file(base64_content, file_path)
+        
+        # Organize file by extension
+        _place_by_ext(file_path, work_dir)
+        
+        # Track experiment files
+        ext = Path(filename).suffix.upper()
+        if len(ext) == 4 and ext.endswith('X'):
+            experiment_files.append(filename)
+        elif ext == ".V48":
+            batch_file = filename
+    
+    # Determine driver mode
+    driver = None
+    if batch_file:
+        driver = "B"
+    elif len(experiment_files) == 1:
+        driver = "A"
+    
+    staged = {
+        "mzx": [work_dir / name for name in experiment_files],
+        "batch_file": (work_dir / batch_file) if batch_file else None,
+        "driver": driver,
+        "precheck": []
+    }
+    
+    return staged
+
+def _upload_unzipped_to_s3(bucket, prefix, work_dir: Path, artifacts):
+    """Upload individual output files to S3 (unzipped)"""
+    if boto3 is None:
+        raise RuntimeError("boto3 not available in runtime")
+    
+    s3 = boto3.client("s3")
+    s3_files = []
+    
+    for artifact in artifacts:
+        file_path = work_dir / artifact
+        if file_path.exists():
+            s3_key = f"{prefix}/{artifact}"
+            s3.upload_file(str(file_path), bucket, s3_key)
+            s3_files.append(f"s3://{bucket}/{s3_key}")
+    
+    return s3_files
+
 def lambda_handler(event, context=None):
     """
     Enhanced Event schema:
@@ -79,21 +195,31 @@ def lambda_handler(event, context=None):
     for p in [work.parent, out_zip.parent, inp.parent]:
         p.mkdir(parents=True, exist_ok=True)
 
-    # ---- Fetch input ZIP ----
-    if "zip_b64" in event and event["zip_b64"]:
+    # ---- Enhanced Input Processing ----
+    if "input_files" in event:
+        # NEW: Individual files with flexible sources
+        staged = stage_individual_files(event["input_files"], work)
+        
+    elif "files_content" in event:
+        # NEW: Direct file content as base64 in JSON
+        staged = stage_direct_content(event["files_content"], work)
+        
+    elif "zip_b64" in event and event["zip_b64"]:
+        # EXISTING: Base64 ZIP input
         _b64_to_file(event["zip_b64"], inp)
+        staged = stage_from_zip(inp, work_dir=work)
+        
     elif "s3_input_bucket" in event and "s3_input_key" in event:
+        # EXISTING: S3 ZIP input
         _download_s3(event["s3_input_bucket"], event["s3_input_key"], inp)
+        staged = stage_from_zip(inp, work_dir=work)
+        
     else:
-        return {"status": "ERROR", "error": "Missing zip_b64 or s3_input_* or empty zip_b64"}
+        return {"status": "ERROR", "error": "No valid input method provided"}
 
     # Optional explicit module code override from event (e.g., MZCER048)
     if event.get("module_code"):
         os.environ["DSSAT_MODULE"] = event["module_code"].strip()
-
-    # ---- Stage inputs & core Data ----
-    staged = stage_from_zip(inp, work_dir=work)
-    # staged = {"mzx": [Path,...], "batch_file": Path|None, "driver": "A"|"B"|None}
 
     # ---- Run model ----
     run_info = run_single_or_batch(work, staged)

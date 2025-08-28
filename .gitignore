@@ -50,6 +50,26 @@ Thumbs.db
 *.zip
 test_output/
 
+# Test response files and temporary data
+test_response*.json
+simple_response.json
+working_response.json
+working_test*.json
+final_test_response.json
+individual_files_test.json
+*.b64
+*_b64.txt
+
+# Temporary test directories
+/individual_test/
+/tests/downloaded_samples/
+/tests/dssat-source/
+
+# Backup files
+*_backup.py
+*_original*.py
+*_improved.py
+
 # Large data files (keep small test files)
 tests/inputs/large_datasets/
 

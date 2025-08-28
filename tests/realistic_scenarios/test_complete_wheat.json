@@ -1,0 +1,17 @@
+{
+  "comment": "REALISTIC TEST: Complete Wheat Simulation - Kansas State University",
+  "description": "Real wheat experiment from DSSAT database with all required files",
+  "individual_files": {
+    "wheat_experiment.WHX": "<<WHEAT_EXP_B64>>",
+    "weather_kansas.WTH": "<<WHEAT_WTH_B64>>", 
+    "prairie_soil.SOL": "<<SOIL_B64>>",
+    "wheat_cultivar.CUL": "<<WHEAT_CUL_B64>>",
+    "wheat_ecotype.ECO": "<<WHEAT_ECO_B64>>",
+    "wheat_species.SPE": "<<WHEAT_SPE_B64>>"
+  },
+  "output_format": "individual_files",
+  "return_outputs": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"],
+  "debug": true,
+  "expected_crop": "wheat",
+  "expected_module": "CSCER048"
+}
