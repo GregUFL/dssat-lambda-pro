@@ -1,5 +1,52 @@
 # DSSAT Lambda Pro - Release Notes
 
+## v5.0 - Major Enhancement Release (2025-08-28) 🚀
+
+### ✨ New Features
+- **Individual File Processing**: Process single files directly without creating ZIP archives
+- **Enhanced S3 Integration**: Direct S3 object processing with flexible input methods
+- **Multiple Input Formats**: Support for ZIP files, individual files, and direct content uploads
+- **Backward Compatibility**: All existing functionality preserved - no breaking changes
+
+### 🔧 Critical Bug Fixes
+- **Universal Crop Support**: Fixed critical bug in file extension handling for all crop types (.WHX, .RIX, .SBX, .COX)
+- **Import System**: Resolved Python import issues that were causing deployment failures
+- **Cross-Platform**: Enhanced Windows/Linux file system compatibility for DSSAT execution
+- **File Classification**: Fixed `_place_by_ext()` function to handle all crop experiment file formats
+
+### 🏗️ Infrastructure Improvements
+- **Enhanced Docker**: Multi-stage builds with optimized container structure
+- **Deployment Automation**: Complete deployment scripts with error handling
+- **Testing Framework**: Realistic test scenarios with actual DSSAT data files
+- **Error Handling**: Improved validation and user feedback systems
+
+### 📚 Comprehensive Documentation Suite
+- **Executive Summary**: Business impact and technical achievement overview
+- **Cross-Platform Guide**: Windows→Linux adaptation technical details
+- **Conversational Walkthrough**: Step-by-step implementation explanation
+- **Presentation Materials**: Executive-ready slide summaries
+- **Technical Documentation**: Complete API and deployment guides
+
+### 🎯 Business Impact
+- **Enterprise Ready**: Suitable for commercial and research applications
+- **User Experience**: Simplified workflows with multiple input options
+- **Operational Efficiency**: Reduced support overhead through better error handling
+- **Future Proof**: Enhanced foundation for additional crop models and features
+
+### 🧪 Validation & Testing
+- **Production Tested**: All improvements validated in AWS production environment
+- **Comprehensive Coverage**: ZIP format and individual file format both working
+- **Realistic Scenarios**: Tested with actual DSSAT crop simulation data
+- **Cross-Platform**: Windows DSSAT adaptation verified on Linux Lambda
+
+### ⚡ Performance & Reliability
+- **Zero Downtime**: All updates deployed with full backward compatibility
+- **Enhanced Logging**: Better troubleshooting and monitoring capabilities
+- **Robust File System**: Improved file handling across different input methods
+- **Error Recovery**: Enhanced error messages and validation
+
+---
+
 ## v4.0 - Production Release (2025-08-13) ✅
 
 ### 🎯 Major Features
