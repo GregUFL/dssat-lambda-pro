@@ -51,7 +51,24 @@ A production-ready AWS Lambda function for running DSSAT (Decision Support Syste
 
 ## 🚀 Quick Start
 
-### AWS Console Test
+### Method 1: Individual Files (New in v5.0!)
+```json
+{
+  "individual_files": {
+    "UFGA8201.MZX": "<base64_content>",
+    "UFGA8201.WTH": "<base64_content>",
+    "SOIL.SOL": "<base64_content>",
+    "MZCER048.CUL": "<base64_content>",
+    "MZCER048.ECO": "<base64_content>",
+    "MZCER048.SPE": "<base64_content>"
+  },
+  "s3_output_bucket": "your-output-bucket",
+  "s3_output_prefix": "results/test-individual",
+  "return_zip_b64": true
+}
+```
+
+### Method 2: S3 Integration
 ```json
 {
   "s3_input_bucket": "your-input-bucket",
@@ -59,6 +76,18 @@ A production-ready AWS Lambda function for running DSSAT (Decision Support Syste
   "s3_output_bucket": "your-output-bucket", 
   "s3_output_prefix": "results/test-001",
   "unzip_outputs": true
+}
+```
+
+### Method 3: Direct Content (New in v5.0!)
+```json
+{
+  "direct_content": {
+    "UFGA8201.MZX": "*EXPERIMENTS\n@N R O C TNAME...",
+    "UFGA8201.WTH": "@ INSI      LAT     LONG  ELEV   TAV   AMP...",
+    "SOIL.SOL": "*SOILS: General DSSAT Soil Input File..."
+  },
+  "return_zip_b64": true
 }
 ```
 
@@ -71,36 +100,58 @@ A production-ready AWS Lambda function for running DSSAT (Decision Support Syste
   "runs": 1,
   "module": "MZCER048",
   "s3_results_zip": "s3://bucket/results/test-001/results.zip",
-  "artifacts": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"]
+  "artifacts": ["Summary.OUT", "PlantGro.OUT", "Evaluate.OUT"],
+  "results_zip_b64": "UEsDBBQAAAAIANQE..."
 }
 ```
 
 ## 🧪 Testing
 
-### Comprehensive Test Suite
+### New Automated Deployment
 ```bash
-# Run full test suite
+# Complete deployment to AWS (New!)
+./scripts/update_lambda.sh
+
+# Run comprehensive test suite
 ./scripts/test_comprehensive.sh
 
 # Validate code quality  
 ./scripts/validate_code.sh
+
+# Test realistic scenarios
+python tests/realistic_scenarios/test_improvements.py
 ```
 
-### Manual Testing
+### Manual Testing Examples
 ```bash
-# Test AWS Lambda function
+# Test individual file processing (New in v5.0!)
 aws lambda invoke \
   --function-name dssat-lambda-pro \
   --cli-binary-format raw-in-base64-out \
-  --payload file://test-payload.json \
+  --payload file://tests/test_wheat_individual.json \
+  response.json
+
+# Test traditional ZIP method
+aws lambda invoke \
+  --function-name dssat-lambda-pro \
+  --cli-binary-format raw-in-base64-out \
+  --payload file://tests/sample_event.json \
   response.json
 ```
 
+### Test Data Available
+- **Maize**: Complete realistic scenario with UFGA8201.MZX
+- **Wheat**: Individual file testing with KSAS8101.WHX  
+- **Rice**: IRPL8501.RIX with full genotype data
+- **Soybean**: UFGA7801.SBX with environmental files
+
 ### Performance Benchmarks
 - **Execution Time**: 30-60 seconds typical
-- **Memory Usage**: ~1GB peak
-- **Docker Image**: 776MB optimized
+- **Memory Usage**: ~1GB peak  
+- **Docker Image**: 776MB optimized with multi-stage builds
 - **Cold Start**: < 10 seconds
+- **Supported Crops**: 20+ including Maize, Wheat, Rice, Soybean, Cotton
+- **File Formats**: All DSSAT experiment files (.MZX, .WHX, .RIX, .SBX, .COX, etc.)
 
 ## � Comprehensive Documentation
 
@@ -117,6 +168,11 @@ aws lambda invoke \
 - **[Deployment Guide](DEPLOYMENT.md)** - AWS deployment instructions
 - **[Usage Guide](USAGE.md)** - API usage and examples
 - **[Release Notes](RELEASE_NOTES.md)** - Version history and changes
+- **[Changelog](CHANGELOG.md)** - Semantic versioning changelog
+- **[Contributing Guide](CONTRIBUTING.md)** - Development guidelines
+
+### 📋 Additional Resources
+- **[Git Improvements Summary](GIT_IMPROVEMENTS_SUMMARY.md)** - Repository modernization details
 
 ## 📊 Production Status
 
@@ -187,124 +243,110 @@ aws lambda invoke \
 }
 ```
 
-## File Structure
+## 🏗️ File Structure
 ```
 dssat-lambda-pro/
-├── infra/
-│   ├── Dockerfile          # Full DSSAT build
-│   └── Dockerfile.mock     # Working demo version
 ├── src/
-│   ├── handler.py          # Main Lambda entry point
-│   ├── stage_inputs.py     # Input file processing
-│   ├── run_dssat.py        # Model execution
+│   ├── handler.py          # Enhanced Lambda entry point (v5.0)
+│   ├── stage_inputs.py     # Universal file processing (fixed)
+│   ├── run_dssat.py        # Cross-platform execution
 │   └── collect_outputs.py  # Output handling
 ├── tests/
-│   ├── sample_event.json   # Test event with real data
-│   └── inputs/            # Complete test dataset
-└── scripts/
-    ├── local_invoke.sh     # Container runner
-    ├── test_local.sh       # Test automation
-    └── final_test.sh       # Full test suite
+│   ├── realistic_scenarios/ # New comprehensive test data
+│   ├── sample_event.json   # Test event examples
+│   └── inputs/             # Test datasets
+├── scripts/
+│   ├── update_lambda.sh    # New deployment automation
+│   ├── test_comprehensive.sh
+│   └── local_invoke.sh
+├── infra/
+│   ├── Dockerfile          # Multi-stage optimized build
+│   └── Dockerfile.enhanced # Production variant
+└── docs/
+    ├── EXECUTIVE_SUMMARY.md
+    ├── CHANGELOG.md
+    └── CONTRIBUTING.md
 ```
 
-## Testing Results ✅
+## ✅ Current Status - v5.0 Production Ready
 
-**All components working successfully:**
-- ✅ Docker build and deployment
-- ✅ Lambda runtime initialization  
-- ✅ ZIP input processing (base64 decode)
-- ✅ File staging and organization
-- ✅ DSSAT execution simulation
-- ✅ Output collection and ZIP creation
-- ✅ Base64 response encoding
+### 🎯 **Fully Operational**
+- ✅ **AWS Lambda Deployed**: Production function `dssat-lambda-pro` active
+- ✅ **Multi-Input Support**: ZIP, individual files, direct content all working
+- ✅ **Universal Crop Support**: All crop types (.MZX, .WHX, .RIX, .SBX, .COX) supported
+- ✅ **Cross-Platform Success**: Windows DSSAT running seamlessly on Linux Lambda
+- ✅ **Enterprise Documentation**: Complete business and technical documentation
+- ✅ **Automated Testing**: Comprehensive test suite with realistic scenarios
 
-## Current Status
+### 🚀 **Recent Achievements (v5.0)**
+- **Individual File Processing**: No more ZIP archive requirements
+- **Enhanced Error Handling**: Better validation and user feedback
+- **Deployment Automation**: One-script AWS deployment
+- **Bug Fixes**: Critical file extension handling issues resolved
+- **Documentation Suite**: Executive summaries and technical guides added
 
-### ✅ **Working (Demo Ready)**
-- Complete infrastructure and workflow
-- Mock DSSAT execution for testing
-- Full input/output pipeline
-- Error handling and validation
-- Local testing environment
+### 🎯 **Production Metrics**
+- **Function Name**: `dssat-lambda-pro` 
+- **Region**: us-east-1
+- **Runtime**: Python 3.11 with Docker
+- **Memory**: 10GB allocated
+- **Timeout**: 15 minutes
+- **Container**: ECR `332451669482.dkr.ecr.us-east-1.amazonaws.com/dssat-lambda-pro`
 
-### 🔧 **Next Steps**
-1. **DSSAT Compilation Fix**: Resolve CMake build issues for v4.8.5.0
-2. **Production Deployment**: Deploy to AWS Lambda
-3. **Performance Testing**: Test with large datasets
-4. **Monitoring**: Add CloudWatch logging
+## 🚀 How to Use
 
-## How to Run
-
+### Local Development
 ```bash
-# Build and test locally
-cd /mnt/ssd/dssat-lambda-pro
-./scripts/final_test.sh
+# Clone and test
+git clone https://github.com/GregUFL/dssat-lambda-pro.git
+cd dssat-lambda-pro
 
-# Manual testing
-docker build -t dssat-lambda-pro:demo . -f infra/Dockerfile.mock
-docker run --rm -p 9000:8080 dssat-lambda-pro:demo
+# Run comprehensive tests
+./scripts/test_comprehensive.sh
 
-# In another terminal
-curl -s http://localhost:9000/2015-03-31/functions/function/invocations \
-  -H 'Content-Type: application/json' \
-  -d @tests/sample_event.json | jq .
+# Deploy to your AWS account
+./scripts/update_lambda.sh
 ```
 
-## Deployment Notes
+### Production Usage
+```bash
+# Test individual file method (recommended)
+aws lambda invoke \
+  --function-name dssat-lambda-pro \
+  --payload file://tests/test_wheat_individual.json \
+  response.json
 
-For production deployment:
-1. Fix DSSAT CMake compilation or use pre-compiled binary
-2. Optimize Docker image size (multi-stage build)
-3. Configure appropriate Lambda timeout (15 minutes)
-4. Set memory allocation (1GB+ recommended)
-5. Add IAM roles for S3 access if needed
+# Monitor results
+cat response.json | jq .
+```
+
+## 📈 Deployment Architecture
+
+The system uses a sophisticated cross-platform approach:
+
+1. **Windows DSSAT → Linux Lambda**: Established Fortran models adapted for serverless
+2. **Multi-Stage Docker**: Optimized builds separating compilation from runtime
+3. **Compatibility Layer**: Windows/Linux file system bridge for seamless operation
+4. **Enterprise Ready**: Professional documentation and automated deployment
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for:
+- Development setup instructions
+- Code standards and guidelines  
+- Testing requirements
+- Pull request process
+
+## 📞 Support & Documentation
+
+For detailed information:
+- **Technical Issues**: Check [Usage Guide](USAGE.md) and test examples
+- **Deployment Help**: See [Deployment Guide](DEPLOYMENT.md)
+- **Business Overview**: Read [Executive Summary](EXECUTIVE_SUMMARY.md)
+- **Implementation Details**: Review [Cross-Platform Guide](DSSAT_CROSS_PLATFORM_ADAPTATION.md)
 
 ---
 
-**Status**: ✅ **IMPLEMENTATION COMPLETE**  
-**Demo**: ✅ **FULLY FUNCTIONAL**  
-**Production Ready**: 🔧 **Pending DSSAT compilation fix**
+**🌾 DSSAT Lambda Pro v5.0** - Bringing 30 years of agricultural research to the cloud with enterprise-grade scalability and professional documentation.
 
-## Power-User DSSAT Invocation (Real Binary Integration)
-
-The runtime now supports executing the real DSSAT executable in a Windows-style manner. The wrapper exposes `DSCSM048.EXE` in the working directory and arguments are passed directly.
-
-Command pattern (inside container work dir):
-
-```
-DSCSM048.EXE <MODULE_CODE> <MODE_FLAG> <FILE>
-```
-
-Examples:
-```
-DSCSM048.EXE MZCER048 A TEST01.MZX
-DSCSM048.EXE MZCER048 B DSSBatch.v48
-```
-
-Where:
-- MODULE_CODE: module executable identifier (e.g., MZCER048, WHCER048, CSCER048)
-- MODE_FLAG: A (single FileX), B (batch), N (seasonal), Q (sequence), S (spatial)
-- FILE: FileX (.MZX) or batch/control file (.v48)
-
-### Lambda Event Additions
-Field `module_code` lets you explicitly choose the module. If omitted, auto-detection attempts:
-1. Infer crop from FileX extension (.MZX -> MZ -> MZCER048)
-2. Parse *CULTIVARS section
-Fallback: `CSCER048`.
-
-Returned JSON now includes `module` plus last stdout/stderr for diagnosis. Set environment `DSSAT_DEBUG=1` to generate `DIAG.TXT` with a directory listing and invocation parameters.
-
-Environment variables exported for DSSAT compatibility: `DSSATDIR=/DSSAT48`, `DSSATPATH=/DSSAT48`.
-
-### Troubleshooting STOP 99
-1. Inspect `MODEL.ERR` (returned by default) for parsing/location issues.
-2. Ensure Weather (*.WTH) filenames match WSTA codes inside the FileX (first 5 chars typically).
-3. Confirm UNIX line endings (LF) in inputs; convert if CRLF present.
-4. Provide a correctly column-aligned batch file (`DSSBatch.v48`) for B mode.
-5. Override module via `module_code` if auto-detection chooses the wrong one.
-6. Enable debug to capture `DIAG.TXT`.
-
-### Planned Enhancements
-- Additional module mappings once full DSSATPRO.v48 profile inspected
-- Validation step to pre-check required Weather/Soil references before run
-- Optional strace layer for deep I/O debugging (local only)
+**Status**: ✅ **PRODUCTION READY** | **Latest**: v5.0 Major Enhancement Release
